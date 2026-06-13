@@ -30,3 +30,49 @@ JSON Response
 | Application | `application/document_analysis_service.py` | Workflow orchestration, prompt |
 | Domain | `domain/validators.py`, `exceptions.py` | Validation rules, error types |
 | Infrastructure | `infrastructure/azure_openai_client.py` | Azure OpenAI API integration |
+
+---
+
+## Endpoint
+
+```
+POST /api/analyze-document
+```
+
+**Request**
+```json
+{ "document": "Your document text here." }
+```
+
+**Response**
+```json
+{
+  "summary": "...",
+  "key_points": ["...", "..."],
+  "risks": ["..."]
+}
+```
+
+---
+
+## Local Development
+
+Prerequisites: [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
+
+```bash
+cp local.settings.json.example local.settings.json
+# Fill in your Azure credentials in local.settings.json
+pip install -r requirements.txt
+func start
+```
+
+---
+
+## Tests
+
+```bash
+pip install -r requirements.txt
+pytest tests/ -v
+```
+
+No real Azure resources required — Azure OpenAI is mocked in all tests.
