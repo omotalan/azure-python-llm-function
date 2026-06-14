@@ -5,8 +5,15 @@ from src.infrastructure import azure_openai_client
 
 logger = logging.getLogger(__name__)
 
-# Prompt is treated as business workflow configuration, not a standalone subsystem. Structure, constraints, and output contract matter more than phrasing
+# ADR: ANALYSIS_PROMPT lives in the application layer, not the domain layer.
+# It encodes a business intent (analyse this document, return these fields) but is
+# tightly coupled to the LLM output contract enforced by azure_openai_client.py.
+# Promoting it to domain would create a dependency from domain → infrastructure,
+# violating layering. At this scope, the application layer is the right home:
+# it owns the orchestration of business intent through technical mechanisms.
 
+# Prompt is treated as business workflow configuration, not a standalone subsystem.
+# Structure, constraints, and output contract matter more than phrasing
 ANALYSIS_PROMPT = """You are a document analysis assistant.
 
 Analyze the document provided by the user and return a single JSON object with exactly
@@ -32,10 +39,14 @@ def analyze(payload: dict) -> dict:
 
     validators.validate_request(payload)
 
-    result = azure_openai_client.complete(
-        prompt=ANALYSIS_PROMPT,
-        user_content=payload["document"],
-    )
+    try:
+        result = azure_openai_client.complete(
+            prompt=ANALYSIS_PROMPT,
+            user_content=payload["document"],
+        )
+    except Exception as exc:
+        logger.exception("Azure OpenAI call failed")
+        raise RuntimeError("LLM call failed") from exc
 
     logger.info("LLM response received, validating output structure")
     validators.validate_response(result)

@@ -36,3 +36,12 @@ def test_analyze_raises_on_malformed_llm_response():
     ):
         with pytest.raises(ValidationException):
             document_analysis_service.analyze({"document": "Some document text."})
+
+
+def test_analyze_raises_on_llm_failure():
+    with patch(
+        "src.application.document_analysis_service.azure_openai_client.complete",
+        side_effect=RuntimeError("LLM call failed"),
+    ):
+        with pytest.raises(RuntimeError, match="LLM call failed"):
+            document_analysis_service.analyze({"document": "Some text."})
