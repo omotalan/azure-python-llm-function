@@ -6,6 +6,7 @@
     "AZURE_OPENAI_ENDPOINT": "https://<your-resource-name>.openai.azure.com/",
     "AZURE_OPENAI_KEY": "<your-api-key>",
     "AZURE_OPENAI_DEPLOYMENT_NAME": "<your-deployment-name>",
-    "DOCUMENT_MAX_LENGTH": "10000"
+    "DOCUMENT_MAX_LENGTH": "10000",
+    "USE_STUB_CLIENT": "false"
   }
 }
