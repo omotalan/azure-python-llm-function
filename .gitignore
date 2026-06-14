@@ -1,0 +1,12 @@
+# Azure Functions local settings contain secrets — never commit the real file.
+local.settings.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+*.egg-info/
+dist/
+build/

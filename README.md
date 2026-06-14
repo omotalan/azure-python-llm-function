@@ -76,3 +76,18 @@ pytest tests/ -v
 ```
 
 No real Azure resources required — Azure OpenAI is mocked in all tests.
+
+---
+
+## CI/CD
+
+GitHub Actions runs tests on every push and PR. The deploy job is scaffolded but requires Azure credentials to activate. See `.github/workflows/deploy.yml`.
+
+---
+
+## Design Notes
+
+- **JSON mode enforced at API level** via `response_format: {"type": "json_object"}`, complementing prompt instructions. Requires gspecific gpt models; see ADR comment in `azure_openai_client.py`.
+- **Dual validation**: request payload and LLM response are validated independently.
+- **No DDD overhead**: light separation of concerns — no repositories, aggregates, or domain events.
+- **Fail-fast config**: missing env vars raise `KeyError` at startup, not mid-request.
