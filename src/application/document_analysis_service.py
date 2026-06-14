@@ -1,7 +1,7 @@
 import logging
 
 from src.domain import validators
-from src.infrastructure import azure_openai_client
+from src.infrastructure import openai_gateway
 
 logger = logging.getLogger(__name__)
 
@@ -36,20 +36,21 @@ Rules:
 def analyze(payload: dict) -> dict:
     """Validate the request, call Azure OpenAI, validate and return the structured result."""
     logger.info("Starting document analysis")
-
+ 
     validators.validate_request(payload)
-
+ 
     try:
-        result = azure_openai_client.complete(
+        result = openai_gateway.complete(
             prompt=ANALYSIS_PROMPT,
             user_content=payload["document"],
         )
     except Exception as exc:
-        logger.exception("Azure OpenAI call failed")
+        logger.exception("OpenAI gateway call failed")
         raise RuntimeError("LLM call failed") from exc
-
+ 
     logger.info("LLM response received, validating output structure")
     validators.validate_response(result)
-
+ 
     logger.info("Document analysis complete")
     return result
+
