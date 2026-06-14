@@ -45,4 +45,8 @@ def complete(
     raw: str = response.choices[0].message.content
     logger.info("Received response from Azure OpenAI")
 
-    return json.loads(raw)
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as exc:
+        logger.exception("Azure OpenAI returned non-JSON content despite JSON mode being set")
+        raise ValueError(f"LLM response is not valid JSON: {exc}") from exc
