@@ -57,14 +57,26 @@ POST /api/analyze-document
 
 ## Local Development
 
-Prerequisites: [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
+Prerequisites: 
+- [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
+- Active Virtual environment
+  - Create venv `python3 -m venv .venv`
+  - Activate venv `source .venv/bin/activate`
+- Emulate Azure Storage via Docker: `docker run -p 10000:10000 -p 10001:10001 -p 10002:10002 mcr.microsoft.com/azure-storage/azurite`
 
+Local Azure host start
 ```bash
 cp local.settings.json.example local.settings.json
 # Fill in your Azure credentials in local.settings.json
 pip install -r requirements.txt
 func start
 ```
+
+Example cURL API request, for local testing:
+```bash
+curl -X POST http://localhost:7071/api/analyze-document   -H "Content-Type: application/json"   -d '{"document": "This is a test document."}'
+```
+
 
 ---
 
@@ -82,6 +94,19 @@ No real Azure resources required — Azure OpenAI is mocked in all tests.
 ## CI/CD
 
 GitHub Actions runs tests on every push and PR. The deploy job is scaffolded but requires Azure credentials to activate. See `.github/workflows/deploy.yml`.
+
+### Commit structure
+
+Commits follow the Domain-Driven Development (DDD) and Test-Driven Development (TDD) based separation of concerns, emulating a simplified, production-grade Jira project. Here I keep commits linked to Epic-level items (multiple commits per Epic, with a summarized description); in a full production-grade project, these Epics would be broken down into Stories/Tasks and subtasks, and each commit would track a single work item.
+
+The Epics are structured as follows:
+- AZPY-1: Set up basic architecture and admin files
+- AZPY-2: Set up preliminary unit tests (TDD)
+- AZPY-3: Design Domain layer
+- AZPY-4: Design Application layer
+- AZPY-5: Design Infrastructure layer
+
+Every commit is prefixed by the Epic ticket to which it belongs.
 
 ---
 
